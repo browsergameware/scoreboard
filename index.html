@@ -1,0 +1,172 @@
+<!-- Copyright 2025 Browser Gameware. All Rights Reserved. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Scoreboard | Browser Gameware</title>
+    <link rel="stylesheet" href="https://cdn360.pages.dev/gameware/fonts/library.css">
+    <style>
+        * {
+            font-family: 'Barclay Sans', Arial, sans-serif;
+        }
+        
+        body {
+            background: #f9f9f9;
+            padding: 2rem;
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .team-form {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .team-form input[type="text"] {
+            padding: 0.5rem;
+            font-size: 1rem;
+            width: 200px;
+        }
+
+        .team-form button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            margin-left: 0.5rem;
+            cursor: pointer;
+        }
+
+        .teams-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .team-card {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 1rem;
+            width: 250px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .team-card h2 {
+            margin: 0 0 1rem 0;
+        }
+
+        .score {
+            font-size: 2rem;
+            margin: 0.5rem 0;
+        }
+
+        .controls {
+            margin: 0.5rem 0;
+        }
+
+        .controls input[type="number"] {
+            width: 60px;
+            padding: 0.3rem;
+            margin-right: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .controls button {
+            margin: 0.25rem;
+            padding: 0.4rem 0.8rem;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .remove-btn {
+            margin-top: 0.5rem;
+            color: red;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            .team-card {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Game Scoreboard</h1>
+
+<div class="team-form">
+    <input type="text" id="teamName" placeholder="Enter team name" />
+    <button onclick="addTeam()">Add Team</button>
+</div>
+
+<div class="teams-container" id="teamsContainer">
+    <!-- Team cards go here -->
+</div>
+
+<script>
+    const teamsContainer = document.getElementById("teamsContainer");
+
+    function addTeam() {
+        const input = document.getElementById("teamName");
+        const name = input.value.trim();
+        if (!name) {
+            alert("Please enter a team name.");
+            return;
+        }
+
+        const card = document.createElement("div");
+        card.className = "team-card";
+
+        let score = 0;
+        const id = `team-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+        card.innerHTML = `
+            <h2>${name}</h2>
+            <div class="score" id="score-${id}">${score}</div>
+            <div class="controls">
+                <input type="number" id="amount-${id}" value="1" />
+                <button onclick="changeScore('${id}', true)">+ Add</button>
+                <button onclick="changeScore('${id}', false)">− Subtract</button>
+            </div>
+            <button class="remove-btn" onclick="removeTeam(this)">Remove Team</button>
+        `;
+
+        card.dataset.teamId = id;
+        card.dataset.score = score;
+
+        teamsContainer.appendChild(card);
+        input.value = "";
+    }
+
+    function changeScore(teamId, isAdd) {
+        const card = document.querySelector(`[data-team-id="${teamId}"]`);
+        const scoreEl = card.querySelector(".score");
+        const amountInput = document.getElementById(`amount-${teamId}`);
+        const amount = parseInt(amountInput.value) || 0;
+
+        let score = parseInt(card.dataset.score) || 0;
+        score = isAdd ? score + amount : score - amount;
+
+        card.dataset.score = score;
+        scoreEl.textContent = score;
+    }
+
+    function removeTeam(button) {
+        const card = button.closest(".team-card");
+            if (confirm(`Remove team "${card.querySelector("h2").textContent}"?`)) {
+            card.remove();
+        }
+    }
+</script>
+
+</body>
+</html>
